@@ -13,7 +13,6 @@ services:
     volumes:
       - ./telegraf.conf:/etc/telegraf/telegraf.conf:ro
     cap_add:
-      #yes cap
       - CAP_NET_RAW
     depends_on:
       - mosquitto
@@ -30,6 +29,7 @@ services:
       - influxdb
     environment:
       # Connect Chronograf to the InfluxDB service defined in this compose file
+      # TODO: ver como plugar certificado para HTTPS e ligar authn/authz
       - INFLUXDB_V3_ENABLED=true
       - INFLUXDB_TYPE=influx-v3-core
       - INFLUXDB_URL=http://influxdb:8181
