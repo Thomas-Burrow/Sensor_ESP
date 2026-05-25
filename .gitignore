@@ -1,2 +1,2 @@
-.env
-mosquitto-config/password_file
+backend/.env
+backend/mosquitto-config/password_file
