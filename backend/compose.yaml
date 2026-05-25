@@ -18,7 +18,7 @@ services:
       - mosquitto
       - influxdb
     environment:
-      - TOKEN=${INFLUXDB3_AUTH_TOKEN}
+      - INFLUXDB3_AUTH_TOKEN=${INFLUXDB3_AUTH_TOKEN}
       - MQTT_USER=${MQTT_USER}
       - MQTT_PASS=${MQTT_PASS}
   cronograf:
