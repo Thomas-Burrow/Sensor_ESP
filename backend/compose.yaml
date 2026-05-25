@@ -1,0 +1,80 @@
+services:
+  mosquitto:
+    image: docker.io/library/eclipse-mosquitto
+    ports:
+      - "1883:1883" #Disponivel externamente
+    volumes:
+      - ./mosquitto-config:/mosquitto/config
+      - ./mosquitto-logs:/mosquitto/logs
+      - ./mosquitto-data:/mosquitto/data
+
+  telegraf:
+    image: docker.io/library/telegraf:latest
+    volumes:
+      - ./telegraf.conf:/etc/telegraf/telegraf.conf:ro
+    cap_add:
+      - CAP_NET_RAW
+    depends_on:
+      - mosquitto
+      - influxdb
+    environment:
+      - TOKEN=${INFLUXDB3_AUTH_TOKEN}
+      - MQTT_USER=${MQTT_USER}
+      - MQTT_PASS=${MQTT_PASS}
+  cronograf:
+    image: docker.io/library/chronograf:latest
+    ports:
+      - "8888:8888" #Disponivel externamente
+    volumes:
+      - chronograf-data:/var/lib/chronograf
+    depends_on:
+      - influxdb
+    environment:
+      # Connect Chronograf to the InfluxDB service defined in this compose file
+      # TODO: ver como plugar certificado para HTTPS e ligar authn/authz
+      - INFLUXDB_V3_ENABLED=true
+      - INFLUXDB_TYPE=influx-v3-core
+      - INFLUXDB_URL=http://influxdb:8181
+      - INFLUXDB_TOKEN=${INFLUXDB3_AUTH_TOKEN}
+  influxdb:
+    image: docker.io/library/influxdb:3-core
+    ports:
+     - "127.0.0.1:8086:8086"
+     - "127.0.0.1:8181:8181"         # Gerenciamento
+    command:
+      - influxdb3
+      - serve
+      - --node-id=node0
+      - --object-store=file
+      - --data-dir=/var/lib/influxdb3/data
+      - --plugin-dir=/var/lib/influxdb3/plugins  # Optional: only needed for processing engine plugins
+    volumes:
+      - influxdb-data:/var/lib/influxdb3/data
+    environment:
+      - LOG_FILTER=warn
+
+  kapacitor:
+    image: docker.io/library/kapacitor
+    ports:
+      - "127.0.0.1:9092:9092"
+    depends_on:
+      - influxdb
+    environment:
+      - KAPACITOR_INFLUXDB_0_TOKEN=$INFLUXDB3_AUTH_TOKEN
+    volumes:
+      - kapacitor-data:/var/lib/kapacitor/data
+      - ./kapacitor.conf:/etc/kapacitor/kapacitor.conf:ro
+
+#  influxdb-ui:
+#    image: docker.io/influxdata/influxdb3-ui
+#    ports:
+#      - "127.0.0.1:8889:80"
+#      - "127.0.0.1:8890:8888"
+#    depends_on:
+#      - influxdb
+
+
+volumes:
+  influxdb-data:
+  chronograf-data:
+  kapacitor-data:
