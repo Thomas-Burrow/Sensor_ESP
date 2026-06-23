@@ -18,7 +18,7 @@
 //  false → lê o sensor PZEM-004T real via UART,
 //          usa o broker/servidor da UFSM (de secrets.h)
 // -----------------------------------------------------------
-#define TEST_MODE true
+#define TEST_MODE false
 
 // -----------------------------------------------------------
 //  WiFi (valores vêm de secrets.h)
