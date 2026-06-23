@@ -1,2 +1,3 @@
 backend/.env
 backend/mosquitto-config/password_file
+detector_energia/src/secrets.h
