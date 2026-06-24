@@ -50,7 +50,7 @@ struct SensorData {
 
 #if !TEST_MODE
   HardwareSerial pzemSerial(SENSOR_UART_NUM);
-  PZEM004Tv30    pzem(pzemSerial, SENSOR_UART_RX_PIN, SENSOR_UART_TX_PIN, PZEM_ADDRESS);
+  PZEM004Tv30    pzem(pzemSerial, 3, 2, PZEM_ADDRESS);
 #endif
 
 WebServer    httpServer(OTA_HTTP_PORT);
@@ -168,9 +168,16 @@ bool readSensor(SensorData &out) {
     float v = pzem.voltage();
     float c = pzem.current();
     float f = pzem.frequency();
+    char test[50];
+    snprintf(test, sizeof(test), "v = %.2f c = %.2f f = %.2f");
+
+    Serial.println(test);
 
     if (isnan(v) || isnan(c) || isnan(f)) {
-        return false;
+        //O sensor usa a energia AC para funcionar, portanto quando a leitura falha devemos mostrar 0
+        v = 0.0;
+        c = 0.0;
+        f = 0.0;
     }
 
     out.voltage   = v;
