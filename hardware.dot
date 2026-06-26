@@ -1,0 +1,13 @@
+digraph G {
+    sensor [label="PZEM-004T"]
+    ESP32 [shape=box3d]
+    cll [label="Conversor de níveis lógicos"]
+    fonte -> powershield
+    powershield -> ESP32
+    powershield -> cll
+    cll -> ESP32
+    ESP32 -> cll
+    cll -> sensor
+    sensor -> cll
+    tomada -> sensor
+}

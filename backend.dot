@@ -1,0 +1,11 @@
+digraph G {
+    influx [shape=cylinder label="InfluxDB"]
+    ESP32 [shape=box3d]
+    mosquitto [shape=trapezium]
+    ESP32 -> mosquitto
+    mosquitto -> telegraf
+    telegraf -> influx
+    influx -> chronograf
+    influx -> kapacitor
+    chronograf -> kapacitor
+}
